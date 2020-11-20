@@ -11,59 +11,58 @@ def findColSetup(columns, depth):
                 smallerLists = findColSetup( columns[:index], depth+1)
                 returnLists.extend(smallerLists)
             discoverNum+=1
-            print( col )
             thisLevelBuild.append(col[depth])
     returnLists.insert( 0, thisLevelBuild)
     return returnLists
 
 
-df = pd.read_csv("Calvin_Mozola_MachineLearning_DataMultiCol.csv",header=[0,1,2,3,4],index_col=0)
+def parseDataFromCsv():
+    # configurations
+    breakByGender = "n" #yes or no
+    breakByAge = "y" # yes or no
+    province = "Ontario"
+    labour = "Labour force 4"
 
-colNames = ['Province','Labour','Gender','Age','Year']
-colParse = findColSetup(df.columns,0)
-print("Cal col")
-print(colParse)
+    plotSamps = []
 
-cols = pd.MultiIndex.from_product(colParse,names=colNames)
-
-df.columns = cols
-
-#convert data to numbers
-for col in df.columns:
-    df[col] = pd.to_numeric(df[col], errors='coerce')
-
-
-province = "Ontario"
-labour = "Labour force 4"
-gender ="Males"
-age = ""
-
-samp = df['Ontario']['Labour force 4']['Males']
-# samp = pd.to_numeric(samp, errors='coerce')
-print(samp)
-# a = samp.index.get_level_values(2).astype(float)
-# for year in samp.columns:
-#     yearCol = samp[year]
-#     print( type(yearCol))
-#     print(yearCol)
-#     for age in yearCol.columns:
-# #         print(" --> {}".format(age))
-# for col in samp.columns:
-#     samp[col] = pd.to_numeric(samp[col], errors='coerce')
-# print(samp)
-
-sum = samp.sum(level=1, axis=1)#sum ascross gender
-
-plt.figure()
-sum.transpose().plot()
-    # plt.plot( data=df, marker='o',  linewidth=1)
+    df = pd.read_csv("Calvin_Mozola_MachineLearning_DataMultiCol.csv",header=[0,1,2,3,4],index_col=0)
+    colNames = ['Province','Labour','Gender','Age','Year']
+    colParse = findColSetup(df.columns,0)
+    cols = pd.MultiIndex.from_product(colParse,names=colNames)
+    df.columns = cols
+    for col in df.columns:#convert data to numbers
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+    samp = df[province][labour]
     
-plt.legend()
-plt.show()
+    if breakByGender.lower() == 'y':
+        plotSamps.append( (samp['Males'].sum(level=1, axis=1),'^','solid','Labour divison with Males') )
+        plotSamps.append( (samp['Females'].sum(level=1, axis=1),'v','solid','Labour divison with Females') )
+    else:   
+        if  breakByAge.lower() == 'y':
+            totalDf = [None,None,None]
+            ageList = ['15 to 24 years','25 to 54 years','55 years and over']
+            for genderSplit in list(set(findColSetup(samp,0)[0])):
+                print(genderSplit)
+                for x in range(len(totalDf)):
+                    if totalDf[x] is None:
+                        totalDf[x] = samp[genderSplit][ageList[x]].sum(level=0,axis=1)
+                    else:
+                        totalDf[x] = totalDf[x].add( samp[genderSplit][ageList[x]].sum(level=0,axis=1) )
+            for index,item in enumerate(totalDf):
+                plotSamps.append( (item,'o','solid',ageList[index]) )
+        else: 
+            plotSamps.append( (samp.sum(level=2, axis=1),'o','solid','Labour divison with all gender') )
+    return plotSamps
 
 
+if __name__ == "__main__":
+    allData = parseDataFromCsv()
 
-
+    for dataSet in allData:
+        data,marker,line,title = dataSet
+        data.transpose().plot(title=title, marker=marker,linestyle=line)
+        plt.legend(bbox_to_anchor=(0.8, 1),loc='upper left',borderaxespad=0., fontsize='xx-small',framealpha=0.25)
+    plt.show()
 
 
             
