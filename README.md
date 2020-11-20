@@ -1,6 +1,16 @@
 # Machine_Learning_Challenge
 
-## Reference links
+This was a chanllege to create a data visulization on the Stats CAN dataset and proform mashup with provided job titles.
+
+Due to time constraints I setting on simply making a visulization of the Stats CAN data. My language of choice is Python and used supporting libraries Pandas and matplotlib. Pandas for the data manipulationa and matplotlib for creating the graphs. A big learning point for me was the use of multi index data structure due to the nautre of the data that Stats CAN provide me.
+
+## Results
+
+![all](https://github.com/1mozolacal/Machine_Learning_Challenge/blob/main/media/all.PNG?raw=true)
+![gender](https://github.com/1mozolacal/Machine_Learning_Challenge/blob/main/media/gender.PNG?raw=true)
+![age](https://github.com/1mozolacal/Machine_Learning_Challenge/blob/main/media/age.PNG?raw=true)
+
+### Reference links
 
 [Link to Challenge!](https://preprlabs.org/challengeManager/machine-learning-assesschallenge-f2021)
 
